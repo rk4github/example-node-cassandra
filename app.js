@@ -1,13 +1,12 @@
 var express = require('express');
 var fs = require('fs');
-var helenus = require('helenus');
+var cassandra = require('cassandra-driver');
 var actions = require('./actions');
-var pool = new helenus.ConnectionPool({
-	hosts      : ['192.168.1.214:9160'],
-	keyspace   : 'ksfabio',
-	timeout    : 3000
+var client = new cassandra.Client({ 
+	contactPoints: ['127.0.0.1'], 
+	keyspace:'ksfabio'
 });
-pool.on('error', function(err){
+client.on('error', function(err){
 	console.error(err.name, err.message);
 });	
 var app = express();
@@ -28,18 +27,18 @@ app.get('/', function (req, res) {
 
 app.post('/contact', function (req, res) {
 	if(typeof(req.body.contactEdit) != "undefined"){
-		actions.UpdateContact(req, res, pool);
+		actions.UpdateContact(req, res, client);
 	} else {
-		actions.InsertContact(req, res, pool);
+		actions.InsertContact(req, res, client);
 	}
 });
 
 app.post('/delete', function (req, res) {	
-	actions.DeleteContact(req, res, pool);
+	actions.DeleteContact(req, res, client);
 });
 
 app.get('/loadData', function (req, res) {
-	actions.LoadContacts(req, res, pool);
+	actions.LoadContacts(req, res, client);
 });
 
 app.listen(8181);
