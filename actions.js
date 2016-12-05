@@ -48,7 +48,7 @@ module.exports = {
 				client.execute(query, [], function(err, results){
 					var data = [];
 					results.rows.forEach(function(row){
-						if( !row ){
+						if( row ){
 						    var obj = row;					  	
 					  	    data.push(obj);
 						}
